@@ -1194,6 +1194,38 @@ namespace seal
             complex_conjugate_inplace(destination, galois_keys, std::move(pool));
         }
 
+        inline void linear_transformation(
+                Ciphertext &encrypted, std::vector<Plaintext> &M, int height, int width,
+                const GaloisKeys &galois_keys, const RelinKeys &relin_keys, Ciphertext &result,
+                MemoryPoolHandle pool = MemoryManager::GetPool()) const
+        {
+            if (context_.key_context_data()->parms().scheme() != scheme_type::ckks)
+            {
+                throw std::logic_error("unsupported scheme");
+            }
+
+            size_t coeff_count = context_.key_context_data()->parms().poly_modulus_degree();
+            size_t slot_count = coeff_count >> 1;
+            size_t stride = slot_count / width;
+
+            std::vector<Ciphertext> rotV(height, encrypted);
+            for (int i=1; i!=height; ++i)
+            {
+                rotate_internal(rotV[i], i * stride, galois_keys, pool);
+            }
+            multiply_plain_inplace(rotV[0], M[0], pool);
+            relinearize_internal(rotV[0], relin_keys, 2, pool);
+            rescale_to_next(rotV[0], rotV[0], pool);
+            result = rotV[0];
+            for (int i=1; i!=height; ++i)
+            {
+                multiply_plain_inplace(rotV[i], M[i], pool);
+                relinearize_internal(rotV[i], relin_keys, 2, pool);
+                rescale_to_next(rotV[i], rotV[i], pool);
+                add_inplace(result, rotV[i]);
+            }
+        }
+
         /**
         Enables access to private members of seal::Evaluator for SEAL_C.
         */

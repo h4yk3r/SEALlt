@@ -45,30 +45,35 @@ int main ()
     for (int i=0; i!=4; ++i)
     {
         vector<double> temp;
-        for (int j=0; j!=4; ++j) temp.push_back(j + 1.0);
+        for (int j=0; j!=4; ++j) temp.push_back((i * 10.0) + j + 1.0);
         M.push_back(temp);
     }
-    seal::Plaintext encodedV;
-    ckks_encoder.paddingEncode(V, scale, encodedV);
-    seal::Ciphertext encV;
-    encryptor.encrypt(encodedV, encV);
-    vector<seal::Plaintext> encodedM;
-    for (int i=0; i!=4; ++i)
-    {
-        seal::Plaintext temp;
-        ckks_encoder.paddingEncode(M[i], scale, temp);
-        encodedM.push_back(temp);
-    }
-    seal::Ciphertext encres;
-    evaluator.linear_transformation(encV, encodedM, 4, 4, galois_keys, relin_keys, encres);
-    // evaluator.rotate_vector(encV, 1024, galois_keys, encres);
-    seal::Plaintext decV;
-    decryptor.decrypt(encres, decV);
-    vector<double> evaV;
-    ckks_encoder.decode(decV, evaV);
 
-    cout << " [ ";
-    for (int i=0; i!=4; ++i) printf("%.3lf ", evaV[i*1024]);
+    for (int i = 0; i != 4; ++i)
+    {
+        printf("[ ");
+        for (size_t j = 0; j != 4; ++j) printf("%.3lf ", (M[i])[j]);
+        printf("]\n");
+    }
+
+    vector<vector<double>> tiledM = seal::tillingMatrix(M, 4, 4);
+
+    for (int i = 0; i != 4; ++i)
+    {
+        printf("[ ");
+        for (size_t j = 0; j != 4; ++j) printf("%.3lf ", (tiledM[i])[j]);
+        printf("]\n");
+    }
+
+    cout << "----------" << endl;
+
+    seal::Plaintext encodedV;
+    seal::ntEncoding(ckks_encoder, scale, V, encodedV, 8, 4);
+    std::vector<double> res;
+    ckks_encoder.decode(encodedV, res);
+
+    cout << "[ ";
+    for (int i=0; i!=4 * 8 / 4; ++i) printf("%.3lf ", res[i * 1024 / (8 / 4)]);
     cout << "]" << endl;
 
     return 0;

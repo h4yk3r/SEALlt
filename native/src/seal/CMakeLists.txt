@@ -49,7 +49,7 @@ install(
         ${CMAKE_CURRENT_LIST_DIR}/serialization.h
         ${CMAKE_CURRENT_LIST_DIR}/valcheck.h
         ${CMAKE_CURRENT_LIST_DIR}/version.h
-        ${CMAKE_CURRENT_LIST_DIR}/linear.h
+        ${CMAKE_CURRENT_LIST_DIR}/linearTrans.h
     DESTINATION
         ${SEAL_INCLUDES_INSTALL_DIR}/seal
 )

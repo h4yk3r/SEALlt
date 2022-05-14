@@ -10,6 +10,8 @@
 
 namespace seal
 {
+    // tillingMatrix()
+    // decompose and recontruct matrices
     inline std::vector<std::vector<double>> tillingMatrix(
             std::vector<std::vector<double>> raw_matrix,
             int height, int width)
@@ -42,7 +44,8 @@ namespace seal
         return tiled_matrix;
     }
 
-    // repeat-padding vector
+    // repeat-padding vectors
+    // spread values
     inline std::vector<double> repeatpaddingVector(std::vector<double> raw_vector, int slot_count,
             int height, int width)
     {
@@ -55,6 +58,7 @@ namespace seal
         return temp;
     }
 
+    // padding vectors
     inline std::vector<double> paddingVector(std::vector<double> raw_vector, int slot_count)
     {
         int stride = slot_count / raw_vector.size();
@@ -63,7 +67,8 @@ namespace seal
         return temp;
     }
 
-
+    // ntEncoding type A
+    // do padding
     void ntEncoding(seal::CKKSEncoder &ckks_encoder, const double &scale,
             std::vector<double> &raw_vector, seal::Plaintext &destination,
             bool ifPadding = true)
@@ -73,6 +78,8 @@ namespace seal
         else ckks_encoder.encode(raw_vector, scale, destination);
     }
 
+    // ntEncoding type B
+    // do repeat padding
     void ntEncoding(seal::CKKSEncoder& ckks_encoder, const double& scale,
             std::vector<double>& raw_vector, seal::Plaintext& destination,
             int height, int width)
@@ -81,6 +88,7 @@ namespace seal
                 scale, destination);
     }
 
+    // main LT function
     seal::Ciphertext lt(
             seal::Ciphertext v, std::vector<std::vector<double>> &M, int height, int width,
             seal::CKKSEncoder &ckks_encoder, const double &scale,
@@ -94,18 +102,20 @@ namespace seal
 
         if (method == 1)
         {
+            // squre matirces
+            
             return v;
         }
         else if (method == 2)
         {
+            // wide matrices
+
             return v;
         }
         else if (method == 3)
         {
-            return v;
-        }
-        else if (method == 4)
-        {
+            // tall matrices
+
             return v;
         }
     }

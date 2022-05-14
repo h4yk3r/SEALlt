@@ -26,4 +26,4 @@
 #include "seal/serialization.h"
 #include "seal/valcheck.h"
 #include "seal/version.h"
-#include "seal/linear.h"
+#include "seal/linearTrans.h"

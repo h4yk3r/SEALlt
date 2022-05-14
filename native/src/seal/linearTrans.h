@@ -95,15 +95,24 @@ namespace seal
             seal::Encryptor &encryptor, seal::Evaluator &evaluator,
             seal::GaloisKeys &galois_keys, seal::RelinKeys &relin__keys)
     {
+        seal::Ciphertext 
         int method = 0;
         if (height == width) method = 1; // square matrices
         else if (height < width) method = 2; // wide matrices
         else if (height > width) method = 3; // tall matrices
 
+        int idx = 0;
         if (method == 1)
         {
             // squre matirces
-            
+            std::vector<std::vector<double>> tiledM = tillingMatrix(M, height, width);
+            for (idx = 0; idx != height; ++idx)
+            {
+                seal::Ciphertext temp;
+                evaluator.multiply_plain();
+            }           
+
+
             return v;
         }
         else if (method == 2)
